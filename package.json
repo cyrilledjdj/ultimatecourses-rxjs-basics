@@ -1,0 +1,14 @@
+{
+  "name": "rxjs-basics",
+  "version": "1.0.0",
+  "description": "rxjs training module UltimateCourses",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rxjs"
+  ],
+  "author": "",
+  "license": "MIT"
+}
