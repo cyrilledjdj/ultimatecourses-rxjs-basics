@@ -4,6 +4,9 @@
   "description": "rxjs training module UltimateCourses",
   "main": "index.js",
   "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack",
+    "build:dev": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -13,5 +16,13 @@
   "license": "MIT",
   "dependencies": {
     "rxjs": "^6.5.2"
+  },
+  "devDependencies": {
+    "ts-loader": "^6.0.4",
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.8.0"
   }
 }

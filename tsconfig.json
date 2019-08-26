@@ -1,0 +1,33 @@
+{
+  "files": ["src/example.ts"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"],
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./@types",
+    "target": "es5",
+    "module": "commonjs",
+    "lib": ["dom", "es6"],
+    "outDir": "dist",
+    "noImplicitThis": true,
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "typeRoots": [
+      "src/@types",
+      "node_modules/@types"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strict": true,
+    // "pretty": true
+    // "listEmittedFiles": true
+    // "listFiles": true,
+    // "diagnostics": true
+    // "traceResolution": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "importHelpers": true
+  }
+}
