@@ -1,5 +1,5 @@
 import { fromEvent, of, range, from, interval, timer, Observer } from 'rxjs';
-import { map, audit, pluck, mapTo } from 'rxjs/operators'
+import { map, audit, pluck, mapTo, filter } from 'rxjs/operators'
 
 const observer: Observer<any> = {
     next: (value: any) => console.log('next', value),
@@ -78,21 +78,36 @@ const observer: Observer<any> = {
 
 // timer$.subscribe(observer)
 
-const observable$ = of(1, 2, 3, 4, 5);
-const other$ = observable$.pipe(map(value => 10 * value));
+// const observable$ = of(1, 2, 3, 4, 5);
+// const other$ = observable$.pipe(map(value => 10 * value));
 // observable$.subscribe(observer);
 // other$.subscribe(observer)
+// const keyup$ = fromEvent(document, 'keyup');
+// keyup$.subscribe(console.log)
+// const keyCode$ = keyup$.pipe(
+//     map((event: KeyboardEvent) => event.code)
+// )
+// keyCode$.subscribe(console.log)
+// const keycodeWithPluck$ = keyup$.pipe(
+//     pluck('key')
+// )
+// keycodeWithPluck$.subscribe(console.log)
+// const pressed$ = keyup$.pipe(
+//     mapTo('Key Pressed!')
+// )
+// pressed$.subscribe(console.log)
+
+// range(1, 5).pipe(
+//     filter(value => value <= 2)
+// ).subscribe(console.log)
+
 const keyup$ = fromEvent(document, 'keyup');
-keyup$.subscribe(console.log)
-const keyCode$ = keyup$.pipe(
+const keycode$ = keyup$.pipe(
     map((event: KeyboardEvent) => event.code)
 )
-keyCode$.subscribe(console.log)
-const keycodeWithPluck$ = keyup$.pipe(
-    pluck('key')
+const enter$ = keycode$.pipe(
+    filter(value => value === 'Enter' || value === 'NumpadEnter')
 )
-keycodeWithPluck$.subscribe(console.log)
-const pressed$ = keyup$.pipe(
-    mapTo('Key Pressed!')
-)
-pressed$.subscribe(console.log)
+
+enter$.subscribe(console.log);
+keycode$.subscribe(console.log)
