@@ -1,4 +1,4 @@
-import { fromEvent } from 'rxjs';
+import { fromEvent, of, range } from 'rxjs';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -29,16 +29,25 @@ import { fromEvent } from 'rxjs';
 //     subscription2.unsubscribe();
 // }, 3000)
 
-const source$ = fromEvent(document, 'click');
+// const source$ = fromEvent(document, 'click');
+// const observer = {
+//     next: value => console.log('next', value),
+//     error: err => console.log('error', err),
+//     complete: () => console.log('complete')
+// }
+// const sub1 = source$.subscribe(observer);
+// sub1.add(source$.subscribe(observer));
+
+// setTimeout(() => {
+//     console.log('unsubscribing');
+//     sub1.unsubscribe();
+// }, 3000)
+
 const observer = {
     next: value => console.log('next', value),
     error: err => console.log('error', err),
     complete: () => console.log('complete')
 }
-const sub1 = source$.subscribe(observer);
-sub1.add(source$.subscribe(observer));
 
-setTimeout(() => {
-    console.log('unsubscribing');
-    sub1.unsubscribe();
-}, 3000)
+const source$ = range(1, 5);
+source$.subscribe(observer);
