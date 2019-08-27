@@ -1,10 +1,11 @@
-import { fromEvent, of, range, from, interval, timer } from 'rxjs';
+import { fromEvent, of, range, from, interval, timer, Observer } from 'rxjs';
+import { map, audit, pluck, mapTo } from 'rxjs/operators'
 
-// const observer: Observer<any> = {
-//     next: (value: any) => console.log('next', value),
-//     error: (error: any) => console.log('error', error),
-//     complete: () => console.log('complete!')
-// }
+const observer: Observer<any> = {
+    next: (value: any) => console.log('next', value),
+    error: (error: any) => console.log('error', error),
+    complete: () => console.log('complete!')
+}
 
 // const observable$ = new Observable(subscriber => {
 //     let count = 0;
@@ -52,11 +53,11 @@ import { fromEvent, of, range, from, interval, timer } from 'rxjs';
 // const source$ = range(1, 5);
 // source$.subscribe(observer);
 
-const observer = {
-    next: value => console.log('next', value),
-    error: err => console.log('error', err),
-    complete: () => console.log('complete')
-}
+// const observer = {
+//     next: value => console.log('next', value),
+//     error: err => console.log('error', err),
+//     complete: () => console.log('complete')
+// }
 
 // function* hello() {
 //     yield 'hello';
@@ -73,6 +74,25 @@ const observer = {
 
 // source$.subscribe(observer);
 
-const timer$ = timer(3000);
+// const timer$ = timer(3000);
 
-timer$.subscribe(observer)
+// timer$.subscribe(observer)
+
+const observable$ = of(1, 2, 3, 4, 5);
+const other$ = observable$.pipe(map(value => 10 * value));
+// observable$.subscribe(observer);
+// other$.subscribe(observer)
+const keyup$ = fromEvent(document, 'keyup');
+keyup$.subscribe(console.log)
+const keyCode$ = keyup$.pipe(
+    map((event: KeyboardEvent) => event.code)
+)
+keyCode$.subscribe(console.log)
+const keycodeWithPluck$ = keyup$.pipe(
+    pluck('key')
+)
+keycodeWithPluck$.subscribe(console.log)
+const pressed$ = keyup$.pipe(
+    mapTo('Key Pressed!')
+)
+pressed$.subscribe(console.log)
