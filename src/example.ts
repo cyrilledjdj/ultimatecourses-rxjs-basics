@@ -1,4 +1,4 @@
-import { fromEvent, of, range } from 'rxjs';
+import { fromEvent, of, range, from } from 'rxjs';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -43,11 +43,32 @@ import { fromEvent, of, range } from 'rxjs';
 //     sub1.unsubscribe();
 // }, 3000)
 
+// const observer = {
+//     next: value => console.log('next', value),
+//     error: err => console.log('error', err),
+//     complete: () => console.log('complete')
+// }
+
+// const source$ = range(1, 5);
+// source$.subscribe(observer);
+
 const observer = {
     next: value => console.log('next', value),
     error: err => console.log('error', err),
     complete: () => console.log('complete')
 }
 
-const source$ = range(1, 5);
+function* hello() {
+    yield 'hello';
+    yield 'world';
+}
+
+const iterator = hello();
+
+// const source$ = from(fetch('https://api.github.com/users/cyrilledjdj'));
+
+// source$.subscribe(observer);
+
+const source$ = from(iterator);
+
 source$.subscribe(observer);
