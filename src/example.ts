@@ -1,5 +1,5 @@
 import { fromEvent, Observer, from, interval, Subscriber, of } from 'rxjs';
-import { map, pluck, reduce, take, scan, mapTo, filter, tap, first } from 'rxjs/operators';
+import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile } from 'rxjs/operators';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -212,17 +212,37 @@ import { map, pluck, reduce, take, scan, mapTo, filter, tap, first } from 'rxjs/
 //     }
 // });
 
-const numbers$ = of(1, 2, 3, 4, 5);
+// const numbers$ = of(1, 2, 3, 4, 5);
+// const click$ = fromEvent(document, 'click')
+// numbers$.pipe(
+//     take(3)
+// ).subscribe(console.log, null, () => console.log('Complete!'));
+
+// click$.pipe(
+//     map((event: MouseEvent) => ({
+//         x: event.clientX,
+//         y: event.clientY
+//     })),
+//     first(({ y }: MouseEvent) => y > 200)
+//     // take(1)
+// ).subscribe(console.log, null, () => console.log('Complete!'));
+
 const click$ = fromEvent(document, 'click')
-numbers$.pipe(
-    take(3)
-).subscribe(console.log, null, () => console.log('Complete!'));
 
 click$.pipe(
     map((event: MouseEvent) => ({
         x: event.clientX,
         y: event.clientY
     })),
-    first(({ y }: MouseEvent) => y > 200)
-    // take(1)
+    tap(console.log),
+    takeWhile(({ y }) => y <= 200, true)
 ).subscribe(console.log, null, () => console.log('Complete!'));
+
+interval(1000).pipe(
+    mapTo(-1),
+    scan((accumulator, current) => {
+        return accumulator + current;
+    }, 5),
+    tap(console.log),
+    filter(value => value >= 0)
+).subscribe(console.log, null, () => console.log('Complete'))
