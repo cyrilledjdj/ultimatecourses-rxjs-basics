@@ -1,5 +1,5 @@
-import { fromEvent, Observer } from 'rxjs';
-import { map, pluck } from 'rxjs/operators';
+import { fromEvent, Observer, from, interval } from 'rxjs';
+import { map, pluck, reduce, take } from 'rxjs/operators';
 
 const observer: Observer<any> = {
     next: (value: any) => console.log('next', value),
@@ -111,13 +111,27 @@ const observer: Observer<any> = {
 
 // enter$.subscribe(console.log);
 // keycode$.subscribe(console.log)
-function calculateScrollPercent(element) {
-    const { scrollTop, scrollHeight, clientHeight } = element;
-    return (scrollTop / (scrollHeight - clientHeight)) * 100;
+// function calculateScrollPercent(element) {
+//     const { scrollTop, scrollHeight, clientHeight } = element;
+//     return (scrollTop / (scrollHeight - clientHeight)) * 100;
+// }
+// const progressBar: HTMLElement = document.querySelector('.progress-bar');
+// const scroll$ = fromEvent(document, 'scroll');
+// const progress$ = scroll$.pipe(
+//     map(({ target }: Event) => calculateScrollPercent(target['documentElement']))
+// )
+// progress$.subscribe(percent => { progressBar.style.width = `${percent}%` })
+
+const numbers = [1, 2, 3, 4, 5];
+
+const totalReducer = (accumulator, currentValue) => {
+    return accumulator + currentValue
 }
-const progressBar: HTMLElement = document.querySelector('.progress-bar');
-const scroll$ = fromEvent(document, 'scroll');
-const progress$ = scroll$.pipe(
-    map(({ target }: Event) => calculateScrollPercent(target['documentElement']))
-)
-progress$.subscribe(percent => { progressBar.style.width = `${percent}%` })
+
+interval(1000).pipe(
+    take(4),
+    reduce(totalReducer, 0)
+).subscribe({
+    next: console.log,
+    complete: () => console.log('Complete!')
+})
