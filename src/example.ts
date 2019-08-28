@@ -1,5 +1,5 @@
 import { fromEvent, Observer, from, interval, Subscriber, of } from 'rxjs';
-import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile } from 'rxjs/operators';
+import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile, takeUntil } from 'rxjs/operators';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -227,22 +227,46 @@ import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile } 
 //     // take(1)
 // ).subscribe(console.log, null, () => console.log('Complete!'));
 
-const click$ = fromEvent(document, 'click')
+// const click$ = fromEvent(document, 'click')
 
-click$.pipe(
-    map((event: MouseEvent) => ({
-        x: event.clientX,
-        y: event.clientY
-    })),
-    tap(console.log),
-    takeWhile(({ y }) => y <= 200, true)
-).subscribe(console.log, null, () => console.log('Complete!'));
+// click$.pipe(
+//     map((event: MouseEvent) => ({
+//         x: event.clientX,
+//         y: event.clientY
+//     })),
+//     tap(console.log),
+//     takeWhile(({ y }) => y <= 200, true)
+// ).subscribe(console.log, null, () => console.log('Complete!'));
 
+// interval(1000).pipe(
+//     mapTo(-1),
+//     scan((accumulator, current) => {
+//         return accumulator + current;
+//     }, 5),
+//     tap(console.log),
+//     filter(value => value >= 0)
+// ).subscribe(console.log, null, () => console.log('Complete'))
+
+const countdown = document.getElementById('countdown') as HTMLElement;
+const message = document.getElementById('message') as HTMLElement;
+const abortButton = document.getElementById('abortMission')
+const counter$ = interval(1000);
+const click$ = fromEvent(document, 'click');
+const abortClick$ = fromEvent(abortButton, 'click');
+
+counter$.pipe(
+    takeUntil(click$)
+).subscribe(console.log, null, () => console.log('Done'))
 interval(1000).pipe(
     mapTo(-1),
     scan((accumulator, current) => {
         return accumulator + current;
-    }, 5),
-    tap(console.log),
-    filter(value => value >= 0)
-).subscribe(console.log, null, () => console.log('Complete'))
+    }, 10),
+    takeWhile(value => value >= 0),
+    takeUntil(abortClick$)
+).subscribe(value => {
+    countdown.innerHTML = '' + value;
+    if (!value) {
+        message.innerHTML = 'liftoff!';
+    }
+});
