@@ -1,5 +1,5 @@
 import { fromEvent, Observer, from, interval, Subscriber, of } from 'rxjs';
-import { map, pluck, reduce, take, scan, mapTo, filter, tap } from 'rxjs/operators';
+import { map, pluck, reduce, take, scan, mapTo, filter, tap, first } from 'rxjs/operators';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -185,29 +185,44 @@ import { map, pluck, reduce, take, scan, mapTo, filter, tap } from 'rxjs/operato
 //     }
 // });
 
-const number$ = of(1, 2, 3, 4, 5);
-number$.pipe(
-    tap(value => console.log('before', value), null, () => console.log('done1')),
-    map(value => value * 10),
-    tap(value => console.log('after', value), null, () => console.log('done2'))
-).subscribe(value => {
-    console.log('from subscribe', value)
-})
+// const number$ = of(1, 2, 3, 4, 5);
+// number$.pipe(
+//     tap(value => console.log('before', value), null, () => console.log('done1')),
+//     map(value => value * 10),
+//     tap(value => console.log('after', value), null, () => console.log('done2'))
+// ).subscribe(value => {
+//     console.log('from subscribe', value)
+// })
 
-const countdown = document.getElementById('countdown') as HTMLElement;
-const message = document.getElementById('message') as HTMLElement;
+// const countdown = document.getElementById('countdown') as HTMLElement;
+// const message = document.getElementById('message') as HTMLElement;
 
-interval(1000).pipe(
-    mapTo(-1),
-    scan((accumulator, current) => {
-        return accumulator + current;
-    }, 10),
-    tap(console.log),
-    filter(value => value >= 0),
-    tap(console.log)
-).subscribe(value => {
-    countdown.innerHTML = '' + value;
-    if (!value) {
-        message.innerHTML = 'liftoff!';
-    }
-});
+// interval(1000).pipe(
+//     mapTo(-1),
+//     scan((accumulator, current) => {
+//         return accumulator + current;
+//     }, 10),
+//     tap(console.log),
+//     filter(value => value >= 0),
+//     tap(console.log)
+// ).subscribe(value => {
+//     countdown.innerHTML = '' + value;
+//     if (!value) {
+//         message.innerHTML = 'liftoff!';
+//     }
+// });
+
+const numbers$ = of(1, 2, 3, 4, 5);
+const click$ = fromEvent(document, 'click')
+numbers$.pipe(
+    take(3)
+).subscribe(console.log, null, () => console.log('Complete!'));
+
+click$.pipe(
+    map((event: MouseEvent) => ({
+        x: event.clientX,
+        y: event.clientY
+    })),
+    first(({ y }: MouseEvent) => y > 200)
+    // take(1)
+).subscribe(console.log, null, () => console.log('Complete!'));
