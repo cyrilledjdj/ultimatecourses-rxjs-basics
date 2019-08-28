@@ -1,5 +1,5 @@
 import { fromEvent, Observer, from, interval, Subscriber, of } from 'rxjs';
-import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile, takeUntil } from 'rxjs/operators';
+import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile, takeUntil, distinctUntilChanged, distinctUntilKeyChanged } from 'rxjs/operators';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -247,26 +247,56 @@ import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile, t
 //     filter(value => value >= 0)
 // ).subscribe(console.log, null, () => console.log('Complete'))
 
-const countdown = document.getElementById('countdown') as HTMLElement;
-const message = document.getElementById('message') as HTMLElement;
-const abortButton = document.getElementById('abortMission')
-const counter$ = interval(1000);
-const click$ = fromEvent(document, 'click');
-const abortClick$ = fromEvent(abortButton, 'click');
+// const countdown = document.getElementById('countdown') as HTMLElement;
+// const message = document.getElementById('message') as HTMLElement;
+// const abortButton = document.getElementById('abortMission')
+// const counter$ = interval(1000);
+// const click$ = fromEvent(document, 'click');
+// const abortClick$ = fromEvent(abortButton, 'click');
 
-counter$.pipe(
-    takeUntil(click$)
-).subscribe(console.log, null, () => console.log('Done'))
-interval(1000).pipe(
-    mapTo(-1),
-    scan((accumulator, current) => {
-        return accumulator + current;
-    }, 10),
-    takeWhile(value => value >= 0),
-    takeUntil(abortClick$)
-).subscribe(value => {
-    countdown.innerHTML = '' + value;
-    if (!value) {
-        message.innerHTML = 'liftoff!';
-    }
-});
+// counter$.pipe(
+//     takeUntil(click$)
+// ).subscribe(console.log, null, () => console.log('Done'))
+// interval(1000).pipe(
+//     mapTo(-1),
+//     scan((accumulator, current) => {
+//         return accumulator + current;
+//     }, 10),
+//     takeWhile(value => value >= 0),
+//     takeUntil(abortClick$)
+// ).subscribe(value => {
+//     countdown.innerHTML = '' + value;
+//     if (!value) {
+//         message.innerHTML = 'liftoff!';
+//     }
+// });
+
+const numbers$ = of(1, 1, 2, 3, 3, 3, 4, 5, 4, 3, 3)
+
+numbers$.pipe(
+    distinctUntilChanged()
+).subscribe(console.log)
+const totalScan = (accumulator, currentValue) => {
+    return { ...accumulator, ...currentValue }
+}
+const user = [
+    { name: 'Brian', loggedIn: false, token: null },
+    { name: 'Brian', loggedIn: true, token: 'abc' },
+    { name: 'Brian', loggedIn: true, token: 123 },
+]
+
+const state$ = from(user).pipe(
+    scan(totalScan, {}),
+)
+
+state$.subscribe({
+    next: console.log,
+    complete: () => console.log('Complete!')
+})
+
+const name$ = state$.pipe(
+    distinctUntilKeyChanged('name'),
+    map(state => state.name),
+)
+
+name$.subscribe(console.log)
