@@ -1,11 +1,11 @@
-import { fromEvent, Observer, from, interval } from 'rxjs';
-import { map, pluck, reduce, take, scan } from 'rxjs/operators';
+import { fromEvent, Observer, from, interval, Subscriber } from 'rxjs';
+import { map, pluck, reduce, take, scan, mapTo, filter } from 'rxjs/operators';
 
-const observer: Observer<any> = {
-    next: (value: any) => console.log('next', value),
-    error: (error: any) => console.log('error', error),
-    complete: () => console.log('complete!')
-}
+// const observer: Observer<any> = {
+//     next: (value: any) => console.log('next', value),
+//     error: (error: any) => console.log('error', error),
+//     complete: () => console.log('complete!')
+// }
 
 // const observable$ = new Observable(subscriber => {
 //     let count = 0;
@@ -138,30 +138,49 @@ const observer: Observer<any> = {
 
 // const numbers = [1, 2, 3, 4, 5];
 
-const totalReducer = (accumulator, currentValue) => {
-    return accumulator + currentValue
-}
-const totalScan = (accumulator, currentValue) => {
-    return { ...accumulator, ...currentValue }
-}
+// const totalReducer = (accumulator, currentValue) => {
+//     return accumulator + currentValue
+// }
+// const totalScan = (accumulator, currentValue) => {
+//     return { ...accumulator, ...currentValue }
+// }
 
-const user = [
-    { name: 'Brian', loggedIn: false, token: null },
-    { name: 'Brian', loggedIn: true, token: 'abc' },
-    { name: 'Brian', loggedIn: true, token: 123 },
-]
+// const user = [
+//     { name: 'Brian', loggedIn: false, token: null },
+//     { name: 'Brian', loggedIn: true, token: 'abc' },
+//     { name: 'Brian', loggedIn: true, token: 123 },
+// ]
 
-const state$ = from(user).pipe(
-    scan(totalScan, {}),
-)
+// const state$ = from(user).pipe(
+//     scan(totalScan, {}),
+// )
 
-state$.subscribe({
-    next: console.log,
-    complete: () => console.log('Complete!')
-})
+// state$.subscribe({
+//     next: console.log,
+//     complete: () => console.log('Complete!')
+// })
 
-const name$ = state$.pipe(
-    map(state => state.name)
-)
+// const name$ = state$.pipe(
+//     map(state => state.name)
+// )
 
-name$.subscribe(console.log)
+// name$.subscribe(console.log)
+
+const counter$ = interval(1000)
+
+const countdown = document.getElementById('countdown') as HTMLElement;
+const message = document.getElementById('message') as HTMLElement;
+
+counter$.pipe(
+    mapTo(-1),
+    scan((accumulator, current) => {
+        return accumulator + current;
+    }, 10),
+    filter(value => value >= 0),
+
+).subscribe(value => {
+    countdown.innerHTML = '' + value;
+    if (!value) {
+        message.innerHTML = 'liftoff!';
+    }
+});
