@@ -5,8 +5,19 @@
         <title>Rxjs Sandbox</title>
         <base href="/">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="example.js"></script>
+        <style>
+            .progress-bar{
+                position: fixed;
+                top: 0;
+                height: 4px;
+                width: 0%;
+                background: #ff12b7
+            }
+        </style>
     </head>
-    <body>
+    <body style="height: 500px; overflow: scroll">
+    <div class="progress-bar"></div>
+    <div style="height: 2500px;"></div>
+    <script src="example.js"></script>
     </body>
 </html>
