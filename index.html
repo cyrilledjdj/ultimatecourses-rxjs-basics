@@ -19,19 +19,42 @@
 
 <body style="height: 500px; overflow: scroll">
     <form>
-        <input type="number" id="first">
-        <input type="number" id="second">
+        <fieldset>
+            <legend>Mortgage Calculator</legend>
+            <div>
+                <label for="loanAmount">Mortgage Amount ($)</label>
+                <input type="number" name="loanAmount" id="loanAmount">
+            </div>
+            <div>
+                <label for="interest">Interest Rate (%)</label>
+                <input type="number" name="interest" id="interest">
+            </div>
+            <div>
+                <label>Mortgage Length
+                    <input value="180" type="radio" name="loanLength" class="loanLength" id="yr15">
+                    <label for="yr15">15 yr</label>
+                    <input value=360 type="radio" name="loanLength" class="loanLength" id="yr30">
+                    <label for="yr30">30 yr</label>
+                </label>
+            </div>
+            <p>Your expected monthly payment is <strong id=expected></strong>$</p>
+        </fieldset>
     </form>
-    <p>
-        start polling to request random <a href="https://random.dog/">dog</a> images!
-    </p>
-    <button id="start" style="background: green; color: white">Start Polling</button>
-    <button id="stop" style="background: red; color: white">Stop polling</button>
-    <p>Polling Status:
-        <span id="polling-status">Stopped</span>
-    </p>
-    <img src="" alt="dog!" style="max-width: 400px; max-height: 400px" id="dog">
-    <div>
+    <div style="display: none">
+        <form>
+            <input type="number" id="first">
+            <input type="number" id="second">
+        </form>
+        <p>
+            start polling to request random <a href="https://random.dog/">dog</a> images!
+        </p>
+        <button id="start" style="background: green; color: white">Start Polling</button>
+        <button id="stop" style="background: red; color: white">Stop polling</button>
+        <p>Polling Status:
+            <span id="polling-status">Stopped</span>
+        </p>
+        <img src="" alt="dog!" style="max-width: 400px; max-height: 400px" id="dog">
+
         <div class="progress-bar"></div>
         <h2 id="countdown"></h2>
         <div id="message"></div>

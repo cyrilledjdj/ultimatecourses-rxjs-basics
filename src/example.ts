@@ -36,7 +36,10 @@ import {
     merge as mergeOperator,
     distinct,
     withLatestFrom,
+    share,
 } from "rxjs/operators";
+
+import calculateMortgage from './calculate-mortgage';
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -684,3 +687,38 @@ import {
 //     )
 // }).subscribe(console.log, null, () => console.log('Complete!'))
 
+const loanAmount = document.getElementById('loanAmount');
+const interest = document.getElementById('interest');
+const loanLength = document.querySelectorAll('.loanLength');
+const expected = document.getElementById('expected');
+
+const createInputValueStream = elem => {
+    return fromEvent(elem, 'input').pipe(
+        pluck('target', 'value'),
+        map(value => parseFloat(value as string))
+    )
+}
+
+const saveResponse = mortgageAmount => {
+    return of(mortgageAmount).pipe(delay(1000))
+}
+const interest$ = createInputValueStream(interest)
+const loanAmount$ = createInputValueStream(loanAmount)
+const loanLength$ = createInputValueStream(loanLength)
+
+const calculation$ = combineLatest(
+    interest$,
+    loanAmount$,
+    loanLength$
+).pipe(
+    map(([interest, loanAmount, loanLength]) => calculateMortgage(interest, loanAmount, loanLength)),
+    tap(console.log),
+    filter(mortgageAmount => !isNaN(parseFloat(mortgageAmount))),
+    distinctUntilChanged(),
+    share()
+)
+calculation$.subscribe(mortgageAmount => expected.innerHTML = mortgageAmount)
+
+calculation$.pipe(
+    mergeMap(mortgageAmount => saveResponse(mortgageAmount)),
+).subscribe();
