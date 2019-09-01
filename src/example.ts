@@ -22,7 +22,9 @@ import {
     auditTime,
     mergeAll,
     mergeMap,
-    switchMap
+    switchMap,
+    concatMap,
+    delay
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -416,24 +418,47 @@ import {
 
 // coordinatesWithSave$.subscribe(console.log);
 
-const click$ = fromEvent(document, 'click');
-const mousedown$ = fromEvent(document, 'mousedown');
-const mouseup$ = fromEvent(document, 'mouseup');
+// const click$ = fromEvent(document, 'click');
+// const mousedown$ = fromEvent(document, 'mousedown');
+// const mouseup$ = fromEvent(document, 'mouseup');
+// const interval$ = interval(1000);
+
+// const BASE_URL = 'https://api.openbrewerydb.org/breweries';
+// // click$.pipe(
+// //     switchMap(() => interval$)
+// // ).subscribe(console.log)
+
+// const textInput = document.getElementById('text-input');
+// const typeaheadContainer = document.getElementById('typeahead-container')
+// const input$ = fromEvent(textInput, 'keyup')
+// input$.pipe(
+//     debounceTime(250),
+//     pluck('target', 'value'),
+//     distinctUntilChanged(),
+//     switchMap(searchTerm => ajax.getJSON(`${BASE_URL}?by_name=${searchTerm}`))
+// ).subscribe((response: Array<{ name }>) => {
+//     typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
+// })
+
 const interval$ = interval(1000);
+const click$ = fromEvent(document, 'click');
+click$.pipe(
+    concatMap(() => interval$.pipe(
+        take(3)
+    )),
+)/* .subscribe(console.log) */
 
-const BASE_URL = 'https://api.openbrewerydb.org/breweries';
-// click$.pipe(
-//     switchMap(() => interval$)
-// ).subscribe(console.log)
+const saveAnswer = (answer) => of(`Saved: ${answer}`).pipe(
+    delay(1500)
+)
 
-const textInput = document.getElementById('text-input');
-const typeaheadContainer = document.getElementById('typeahead-container')
-const input$ = fromEvent(textInput, 'keyup')
-input$.pipe(
-    debounceTime(250),
-    pluck('target', 'value'),
-    distinctUntilChanged(),
-    switchMap(searchTerm => ajax.getJSON(`${BASE_URL}?by_name=${searchTerm}`))
-).subscribe((response: Array<{ name }>) => {
-    typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
-})
+const radioButtons = document.querySelectorAll('.radio-option')
+
+const answerChange$ = fromEvent(
+    radioButtons, 'click'
+)
+
+answerChange$.pipe(
+    concatMap(event => saveAnswer((event.target as HTMLInputElement).value))
+).subscribe(console.log)
+
