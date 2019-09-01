@@ -1,4 +1,5 @@
 import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler } from "rxjs";
+import { ajax } from 'rxjs/ajax';
 import {
     map,
     pluck,
@@ -18,7 +19,9 @@ import {
     throttleTime,
     sampleTime,
     sample,
-    auditTime
+    auditTime,
+    mergeAll,
+    mergeMap
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -367,9 +370,26 @@ import {
 //     // map(({ clientX, clientY }: MouseEvent) => ({ clientX, clientY }))
 // ).subscribe(console.log)
 
-const click$ = fromEvent(document, 'click')
-const timer$ = interval(1000)
-click$.pipe(
-    auditTime(4000),
-).subscribe(console.log)
+// const click$ = fromEvent(document, 'click')
+// const timer$ = interval(1000)
+// click$.pipe(
+//     auditTime(4000),
+// ).subscribe(console.log)
 
+
+const textInput = document.getElementById('text-input')
+
+const input$ = fromEvent(textInput, 'keyup')
+
+input$.pipe(
+    // map(event => {
+    //     const val = (event.target as HTMLInputElement).value;
+    //     return ajax.getJSON(`https://api.github.com/users/${val}`, {});
+    // }),
+    debounceTime(1000),
+    mergeMap(event => {
+        const val = (event.target as HTMLInputElement).value;
+        return ajax.getJSON(`https://api.github.com/users/${val}`, {});
+    }),
+    // mergeAll(),
+).subscribe(console.log)
