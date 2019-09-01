@@ -1,4 +1,4 @@
-import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler } from "rxjs";
+import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler, empty } from "rxjs";
 import { ajax } from 'rxjs/ajax';
 import {
     map,
@@ -25,7 +25,8 @@ import {
     switchMap,
     concatMap,
     delay,
-    exhaustMap
+    exhaustMap,
+    catchError
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -463,25 +464,41 @@ import {
 //     concatMap(event => saveAnswer((event.target as HTMLInputElement).value))
 // ).subscribe(console.log)
 
-const interval$ = interval(1000)
-const click$ = fromEvent(document, 'click')
+// const interval$ = interval(1000)
+// const click$ = fromEvent(document, 'click')
 
 
-click$.pipe(
-    exhaustMap(() => interval$.pipe(take(3)))
-)/* .subscribe(console.log) */
+// click$.pipe(
+//     exhaustMap(() => interval$.pipe(take(3)))
+// )/* .subscribe(console.log) */
 
 
-const authenticateUser = () => ajax.post(
-    'https://jsonplaceholder.typicode.com/users',
-    {
-        email: 'eve.holt@regres.in',
-        password: 'cityslicka'
-    }
-)
+// const authenticateUser = () => ajax.post(
+//     'https://jsonplaceholder.typicode.com/users',
+//     {
+//         email: 'eve.holt@regres.in',
+//         password: 'cityslicka'
+//     }
+// )
 
-const loginButton = document.getElementById('login')
+// const loginButton = document.getElementById('login')
 
-const login$ = fromEvent(loginButton, 'click').pipe(
-    exhaustMap(authenticateUser)
-).subscribe(console.log)
+// const login$ = fromEvent(loginButton, 'click').pipe(
+//     exhaustMap(authenticateUser)
+// ).subscribe(console.log)
+
+const BASE_URL = 'https://api.openbrewerydb.org/breweries';
+
+const textInput = document.getElementById('text-input');
+const typeaheadContainer = document.getElementById('typeahead-container')
+const input$ = fromEvent(textInput, 'keyup')
+input$.pipe(
+    debounceTime(250),
+    pluck('target', 'value'),
+    distinctUntilChanged(),
+    switchMap(searchTerm => ajax.getJSON(`${BASE_URL}?by_name=${searchTerm}`).pipe(
+        catchError(error => empty())
+    ))
+).subscribe((response: Array<{ name }>) => {
+    typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
+})
