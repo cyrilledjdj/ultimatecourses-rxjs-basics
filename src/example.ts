@@ -1,5 +1,21 @@
-import { fromEvent, Observer, from, interval, Subscriber, of } from 'rxjs';
-import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile, takeUntil, distinctUntilChanged, distinctUntilKeyChanged } from 'rxjs/operators';
+import { fromEvent, Observer, from, interval, Subscriber, of } from "rxjs";
+import {
+    map,
+    pluck,
+    reduce,
+    take,
+    scan,
+    mapTo,
+    filter,
+    tap,
+    first,
+    takeWhile,
+    takeUntil,
+    distinctUntilChanged,
+    distinctUntilKeyChanged,
+    debounceTime,
+    debounce
+} from "rxjs/operators";
 
 // const observer: Observer<any> = {
 //     next: (value: any) => console.log('next', value),
@@ -271,32 +287,44 @@ import { map, pluck, reduce, take, scan, mapTo, filter, tap, first, takeWhile, t
 //     }
 // });
 
-const numbers$ = of(1, 1, 2, 3, 3, 3, 4, 5, 4, 3, 3)
+// const numbers$ = of(1, 1, 2, 3, 3, 3, 4, 5, 4, 3, 3)
 
-numbers$.pipe(
+// numbers$.pipe(
+//     distinctUntilChanged()
+// ).subscribe(console.log)
+// const totalScan = (accumulator, currentValue) => {
+//     return { ...accumulator, ...currentValue }
+// }
+// const user = [
+//     { name: 'Brian', loggedIn: false, token: null },
+//     { name: 'Brian', loggedIn: true, token: 'abc' },
+//     { name: 'Brian', loggedIn: true, token: 123 },
+// ]
+
+// const state$ = from(user).pipe(
+//     scan(totalScan, {}),
+// )
+
+// state$.subscribe({
+//     next: console.log,
+//     complete: () => console.log('Complete!')
+// })
+
+// const name$ = state$.pipe(
+//     distinctUntilKeyChanged('name'),
+//     map(state => state.name),
+// )
+
+// name$.subscribe(console.log)4
+
+const inputBox = document.getElementById('text-input')
+
+const input$ = fromEvent(inputBox, 'keyup');
+const click$ = fromEvent(document, 'click');
+
+input$.pipe(
+    // debounceTime(1000),
+    debounce(() => interval(1000)),
+    pluck('target', 'value'),
     distinctUntilChanged()
-).subscribe(console.log)
-const totalScan = (accumulator, currentValue) => {
-    return { ...accumulator, ...currentValue }
-}
-const user = [
-    { name: 'Brian', loggedIn: false, token: null },
-    { name: 'Brian', loggedIn: true, token: 'abc' },
-    { name: 'Brian', loggedIn: true, token: 123 },
-]
-
-const state$ = from(user).pipe(
-    scan(totalScan, {}),
-)
-
-state$.subscribe({
-    next: console.log,
-    complete: () => console.log('Complete!')
-})
-
-const name$ = state$.pipe(
-    distinctUntilKeyChanged('name'),
-    map(state => state.name),
-)
-
-name$.subscribe(console.log)
+).subscribe(value => console.log(value), null, () => console.log('Complete!'))
