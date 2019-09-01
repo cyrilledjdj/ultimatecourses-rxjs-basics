@@ -1,4 +1,4 @@
-import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer } from "rxjs";
+import { fromEvent, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer } from "rxjs";
 import { ajax } from 'rxjs/ajax';
 import {
     map,
@@ -31,7 +31,8 @@ import {
     finalize,
     switchMapTo,
     startWith,
-    endWith
+    endWith,
+    concat as concatOperator
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -524,28 +525,44 @@ import {
 //     )),
 // ).subscribe(url => dogImage.src = url)
 
-const number$ = of(1, 2, 3)
+// const number$ = of(1, 2, 3)
 // number$.pipe(startWith(12), endWith(12)).subscribe(console.log)
 
-const counter$ = interval(1000)
+// const counter$ = interval(1000)
 
-const countdown = document.getElementById('countdown') as HTMLElement;
-const message = document.getElementById('message') as HTMLElement;
-const abortButton = document.getElementById('abortMission') as HTMLButtonElement;
-const COUNTDOWN_FROM = 10;
-const abortClick$ = fromEvent(abortButton, 'click')
+// const countdown = document.getElementById('countdown') as HTMLElement;
+// const message = document.getElementById('message') as HTMLElement;
+// const abortButton = document.getElementById('abortMission') as HTMLButtonElement;
+// const COUNTDOWN_FROM = 10;
+// const abortClick$ = fromEvent(abortButton, 'click')
 
-counter$.pipe(
-    mapTo(-1),
-    scan((accumulator, current) => {
-        return accumulator + current;
-    }, COUNTDOWN_FROM),
-    takeWhile(value => value >= 0),
-    takeUntil(abortClick$),
-    startWith(COUNTDOWN_FROM)
-).subscribe(value => {
-    countdown.innerHTML = '' + value;
-    if (!value) {
-        message.innerHTML = 'liftoff!';
-    }
-});
+// counter$.pipe(
+//     mapTo(-1),
+//     scan((accumulator, current) => {
+//         return accumulator + current;
+//     }, COUNTDOWN_FROM),
+//     takeWhile(value => value >= 0),
+//     takeUntil(abortClick$),
+//     startWith(COUNTDOWN_FROM)
+// ).subscribe(value => {
+//     countdown.innerHTML = '' + value;
+//     if (!value) {
+//         message.innerHTML = 'liftoff!';
+//     }
+// });
+
+const interval$ = interval(1000)
+const delayed$ = empty().pipe(delay(1000))
+const concat$ = concat(from([1, 2, 3]), of(1, 2, 3))
+
+// concat$.subscribe(console.log)
+
+delayed$.pipe(
+    concatOperator(
+        delayed$.pipe(startWith('3...')),
+        delayed$.pipe(startWith('2...')),
+        delayed$.pipe(startWith('1...')),
+        delayed$.pipe(startWith('Go!')),
+    ),
+    startWith('Get Ready!')
+).subscribe(console.log)
