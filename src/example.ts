@@ -1,4 +1,4 @@
-import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler, empty } from "rxjs";
+import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer } from "rxjs";
 import { ajax } from 'rxjs/ajax';
 import {
     map,
@@ -26,7 +26,10 @@ import {
     concatMap,
     delay,
     exhaustMap,
-    catchError
+    catchError,
+    mergeMapTo,
+    finalize,
+    switchMapTo
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -487,18 +490,34 @@ import {
 //     exhaustMap(authenticateUser)
 // ).subscribe(console.log)
 
-const BASE_URL = 'https://api.openbrewerydb.org/breweries';
+// const BASE_URL = 'https://api.openbrewerydb.org/breweries';
 
-const textInput = document.getElementById('text-input');
-const typeaheadContainer = document.getElementById('typeahead-container')
-const input$ = fromEvent(textInput, 'keyup')
-input$.pipe(
-    debounceTime(250),
-    pluck('target', 'value'),
-    distinctUntilChanged(),
-    switchMap(searchTerm => ajax.getJSON(`${BASE_URL}?by_name=${searchTerm}`).pipe(
-        catchError(error => empty())
-    ))
-).subscribe((response: Array<{ name }>) => {
-    typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
-})
+// const textInput = document.getElementById('text-input');
+// const typeaheadContainer = document.getElementById('typeahead-container')
+// const input$ = fromEvent(textInput, 'keyup')
+// input$.pipe(
+//     debounceTime(250),
+//     pluck('target', 'value'),
+//     distinctUntilChanged(),
+//     switchMap(searchTerm => ajax.getJSON(`${BASE_URL}?by_name=${searchTerm}`).pipe(
+//         catchError(error => empty())
+//     ))
+// ).subscribe((response: Array<{ name }>) => {
+//     typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
+// })
+const startButton = document.getElementById('start')
+const stopButton = document.getElementById('stop')
+const pollingStatus = document.getElementById('polling-status')
+const dogImage = document.getElementById('dog') as HTMLImageElement
+const startClick$ = fromEvent(startButton, 'click')
+const stopClick$ = fromEvent(stopButton, 'click')
+
+startClick$.pipe(
+    exhaustMap(() => timer(0, 5000).pipe(
+        tap(() => pollingStatus.innerHTML = 'Active'),
+        switchMapTo(ajax.getJSON('https://random.dog/woof.json')),
+        pluck('url'),
+        takeUntil(stopClick$),
+        finalize(() => pollingStatus.innerHTML = 'Stopped')
+    )),
+).subscribe(url => dogImage.src = url)

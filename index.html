@@ -18,32 +18,43 @@
 </head>
 
 <body style="height: 500px; overflow: scroll">
-    <div class="progress-bar"></div>
-    <h2 id="countdown"></h2>
-    <div id="message"></div>
-    <button id="abortMission">Abort Mission!</button>
-    <input id="text-input" />
-    <div id="typeahead-container"></div>
-    <fieldset>
-        <legend>What is your favorite operator?</legend>
-        <label for="mergeMap">mergeMap</label>
-        <input type="radio" id="mergeMap" value="mergeMap" name="operator" class="radio-option" />
-        <label for="switchMap">switchMap</label>
-        <input type="radio" id="switchMap" value="switchMap" name="operator" class="radio-option" />
-        <label for="concatMap">concatMap</label>
-        <input type="radio" id="concatMap" value="concatMap" name="operator" class="radio-option" />
-    </fieldset>
-    <form id="login-form">
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text" name="email" id="email">
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password">
-        </div>
-        <button type="button" id="login">Login</button>
-    </form>
+    <p>
+        start polling to request random <a href="https://random.dog/">dog</a> images!
+    </p>
+    <button id="start" style="background: green; color: white">Start Polling</button>
+    <button id="stop" style="background: red; color: white">Stop polling</button>
+    <p>Polling Status:
+        <span id="polling-status">Stopped</span>
+    </p>
+    <img src="" alt="dog!" style="max-width: 400px; max-height: 400px" id="dog">
+    <div style="display: none">
+        <div class="progress-bar"></div>
+        <h2 id="countdown"></h2>
+        <div id="message"></div>
+        <button id="abortMission">Abort Mission!</button>
+        <input id="text-input" />
+        <div id="typeahead-container"></div>
+        <fieldset>
+            <legend>What is your favorite operator?</legend>
+            <label for="mergeMap">mergeMap</label>
+            <input type="radio" id="mergeMap" value="mergeMap" name="operator" class="radio-option" />
+            <label for="switchMap">switchMap</label>
+            <input type="radio" id="switchMap" value="switchMap" name="operator" class="radio-option" />
+            <label for="concatMap">concatMap</label>
+            <input type="radio" id="concatMap" value="concatMap" name="operator" class="radio-option" />
+        </fieldset>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <button type="button" id="login">Login</button>
+        </form>
+    </div>
     <div style="height: 2500px;"></div>
     <script src="example.js"></script>
 </body>
