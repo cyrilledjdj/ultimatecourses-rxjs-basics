@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <title>Rxjs Sandbox</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-      .progress-bar {
-        position: fixed;
-        top: 0;
-        height: 4px;
-        width: 0%;
-        background: #ff12b7;
-      }
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            height: 4px;
+            width: 0%;
+            background: #ff12b7;
+        }
     </style>
-  </head>
-  <body style="height: 500px; overflow: scroll">
+</head>
+
+<body style="height: 500px; overflow: scroll">
     <div class="progress-bar"></div>
     <h2 id="countdown"></h2>
     <div id="message"></div>
@@ -23,33 +25,27 @@
     <input id="text-input" />
     <div id="typeahead-container"></div>
     <fieldset>
-      <legend>What is your favorite operator?</legend>
-      <label for="mergeMap">mergeMap</label>
-      <input
-        type="radio"
-        id="mergeMap"
-        value="mergeMap"
-        name="operator"
-        class="radio-option"
-      />
-      <label for="switchMap">switchMap</label>
-      <input
-        type="radio"
-        id="switchMap"
-        value="switchMap"
-        name="operator"
-        class="radio-option"
-      />
-      <label for="concatMap">concatMap</label>
-      <input
-        type="radio"
-        id="concatMap"
-        value="concatMap"
-        name="operator"
-        class="radio-option"
-      />
+        <legend>What is your favorite operator?</legend>
+        <label for="mergeMap">mergeMap</label>
+        <input type="radio" id="mergeMap" value="mergeMap" name="operator" class="radio-option" />
+        <label for="switchMap">switchMap</label>
+        <input type="radio" id="switchMap" value="switchMap" name="operator" class="radio-option" />
+        <label for="concatMap">concatMap</label>
+        <input type="radio" id="concatMap" value="concatMap" name="operator" class="radio-option" />
     </fieldset>
+    <form id="login-form">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <button type="button" id="login">Login</button>
+    </form>
     <div style="height: 2500px;"></div>
     <script src="example.js"></script>
-  </body>
+</body>
+
 </html>

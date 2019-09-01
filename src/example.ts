@@ -24,7 +24,8 @@ import {
     mergeMap,
     switchMap,
     concatMap,
-    delay
+    delay,
+    exhaustMap
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -440,25 +441,47 @@ import {
 //     typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
 // })
 
-const interval$ = interval(1000);
-const click$ = fromEvent(document, 'click');
+// const interval$ = interval(1000);
+// const click$ = fromEvent(document, 'click');
+// click$.pipe(
+//     concatMap(() => interval$.pipe(
+//         take(3)
+//     )),
+// )/* .subscribe(console.log) */
+
+// const saveAnswer = (answer) => of(`Saved: ${answer}`).pipe(
+//     delay(1500)
+// )
+
+// const radioButtons = document.querySelectorAll('.radio-option')
+
+// const answerChange$ = fromEvent(
+//     radioButtons, 'click'
+// )
+
+// answerChange$.pipe(
+//     concatMap(event => saveAnswer((event.target as HTMLInputElement).value))
+// ).subscribe(console.log)
+
+const interval$ = interval(1000)
+const click$ = fromEvent(document, 'click')
+
+
 click$.pipe(
-    concatMap(() => interval$.pipe(
-        take(3)
-    )),
+    exhaustMap(() => interval$.pipe(take(3)))
 )/* .subscribe(console.log) */
 
-const saveAnswer = (answer) => of(`Saved: ${answer}`).pipe(
-    delay(1500)
+
+const authenticateUser = () => ajax.post(
+    'https://jsonplaceholder.typicode.com/users',
+    {
+        email: 'eve.holt@regres.in',
+        password: 'cityslicka'
+    }
 )
 
-const radioButtons = document.querySelectorAll('.radio-option')
+const loginButton = document.getElementById('login')
 
-const answerChange$ = fromEvent(
-    radioButtons, 'click'
-)
-
-answerChange$.pipe(
-    concatMap(event => saveAnswer((event.target as HTMLInputElement).value))
+const login$ = fromEvent(loginButton, 'click').pipe(
+    exhaustMap(authenticateUser)
 ).subscribe(console.log)
-
