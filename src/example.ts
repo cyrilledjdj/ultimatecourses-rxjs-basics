@@ -377,19 +377,40 @@ import {
 // ).subscribe(console.log)
 
 
-const textInput = document.getElementById('text-input')
+// const textInput = document.getElementById('text-input')
 
-const input$ = fromEvent(textInput, 'keyup')
+// const input$ = fromEvent(textInput, 'keyup')
 
-input$.pipe(
-    // map(event => {
-    //     const val = (event.target as HTMLInputElement).value;
-    //     return ajax.getJSON(`https://api.github.com/users/${val}`, {});
-    // }),
-    debounceTime(1000),
-    mergeMap(event => {
-        const val = (event.target as HTMLInputElement).value;
-        return ajax.getJSON(`https://api.github.com/users/${val}`, {});
-    }),
-    // mergeAll(),
+// input$.pipe(
+//     // map(event => {
+//     //     const val = (event.target as HTMLInputElement).value;
+//     //     return ajax.getJSON(`https://api.github.com/users/${val}`, {});
+//     // }),
+//     debounceTime(1000),
+//     mergeMap(event => {
+//         const val = (event.target as HTMLInputElement).value;
+//         return ajax.getJSON(`https://api.github.com/users/${val}`, {});
+//     }),
+//     // mergeAll(),
+// ).subscribe(console.log)
+
+const click$ = fromEvent(document, 'click');
+const mousedown$ = fromEvent(document, 'mousedown');
+const mouseup$ = fromEvent(document, 'mouseup');
+const interval$ = interval(1000);
+
+mousedown$.pipe(
+    mergeMap(() => interval$.pipe(
+        takeUntil(mouseup$)
+    ))
 ).subscribe(console.log)
+
+const coordinates$ = click$.pipe(
+    map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
+)
+
+const coordinatesWithSave$ = coordinates$.pipe(
+    mergeMap(coords => ajax.post('https://www.mocky.io/v2/5185415ba171ea3a00704eed', coords))
+)
+
+coordinatesWithSave$.subscribe(console.log);
