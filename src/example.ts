@@ -1,4 +1,4 @@
-import { fromEvent, merge, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer, combineLatest } from "rxjs";
+import { fromEvent, merge, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer, combineLatest, forkJoin } from "rxjs";
 import { ajax } from 'rxjs/ajax';
 import {
     map,
@@ -33,6 +33,7 @@ import {
     startWith,
     endWith,
     concat as concatOperator,
+    merge as mergeOperator,
     distinct,
     withLatestFrom,
 } from "rxjs/operators";
@@ -610,45 +611,75 @@ import {
 //     }
 // });
 
-const firstInput = document.getElementById('first');
-const secondInput = document.getElementById('second');
+// const firstInput = document.getElementById('first');
+// const secondInput = document.getElementById('second');
 
 
-const keyup$ = fromEvent(document, 'keyup')
-const click$ = fromEvent(document, 'click')
+// const keyup$ = fromEvent(document, 'keyup')
+// const click$ = fromEvent(document, 'click')
 
-const changeAsValue = (elem: HTMLElement) => {
-    return merge(
-        fromEvent(elem, 'change'),
-        fromEvent(elem, 'keyup')
-    ).pipe(
-        map((event: Event) => (event.target as HTMLInputElement).valueAsNumber),
-        distinctUntilChanged()
-    )
-}
+// const changeAsValue = (elem: HTMLElement) => {
+//     return merge(
+//         fromEvent(elem, 'change'),
+//         fromEvent(elem, 'keyup')
+//     ).pipe(
+//         map((event: Event) => (event.target as HTMLInputElement).valueAsNumber),
+//         distinctUntilChanged()
+//     )
+// }
 
 // keyup$.subscribe(console.log)
 // click$.subscribe(console.log) 
-combineLatest(
-    of(1, 2, 3),
-    of(4, 5, 6)
-).pipe(
-    withLatestFrom()
-).subscribe(console.log)
+// combineLatest(
+//     of(1, 2, 3),
+//     of(4, 5, 6)
+// ).pipe(
+//     withLatestFrom()
+// ).subscribe(console.log)
 
 // combineLatest(
 //     keyup$,
 //     click$
 // ).subscribe(console.log)
 
-click$.pipe(
-    withLatestFrom(interval(1000))
+// click$.pipe(
+//     withLatestFrom(interval(1000))
+// ).subscribe(console.log)
+
+// combineLatest(
+//     changeAsValue(firstInput),
+//     changeAsValue(secondInput)
+// ).pipe(
+//     filter(([first, second]: Array<any>) => !isNaN(first) && !isNaN(second)),
+//     map(([first, second]) => first + second)
+// ).subscribe(console.log)
+
+const number$ = of(1, 2, 3)
+const letters$ = from(['a', 'b', 'c'])
+
+forkJoin(
+    number$.pipe(delay(3000)),
+    letters$.pipe(delay(6000))
 ).subscribe(console.log)
 
-combineLatest(
-    changeAsValue(firstInput),
-    changeAsValue(secondInput)
-).pipe(
-    filter(([first, second]: Array<any>) => !isNaN(first) && !isNaN(second)),
-    map(([first, second]) => first + second)
-).subscribe(console.log)
+forkJoin({
+    numbers: number$.pipe(delay(3000)),
+    letters: letters$.pipe(delay(6000))
+}).subscribe(console.log)
+
+const GITHUB_API_BASE = 'https://api.github.com';
+
+forkJoin({
+    'full-name': ajax.getJSON(`${GITHUB_API_BASE}/users/cyrilledjdj`).pipe(
+        pluck('name')
+    ),
+    'repo-names': ajax.getJSON(`${GITHUB_API_BASE}/users/cyrilledjdj/repos`).pipe(
+        map((list: Array<any>) => {
+            const ans = []
+            list.reduce((prev, curr) => {
+                ans.push(curr.name);
+            });
+            return ans;
+        })
+    )
+}).subscribe(console.log)
