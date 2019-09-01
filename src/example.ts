@@ -29,7 +29,9 @@ import {
     catchError,
     mergeMapTo,
     finalize,
-    switchMapTo
+    switchMapTo,
+    startWith,
+    endWith
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -505,19 +507,45 @@ import {
 // ).subscribe((response: Array<{ name }>) => {
 //     typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
 // })
-const startButton = document.getElementById('start')
-const stopButton = document.getElementById('stop')
-const pollingStatus = document.getElementById('polling-status')
-const dogImage = document.getElementById('dog') as HTMLImageElement
-const startClick$ = fromEvent(startButton, 'click')
-const stopClick$ = fromEvent(stopButton, 'click')
+// const startButton = document.getElementById('start')
+// const stopButton = document.getElementById('stop')
+// const pollingStatus = document.getElementById('polling-status')
+// const dogImage = document.getElementById('dog') as HTMLImageElement
+// const startClick$ = fromEvent(startButton, 'click')
+// const stopClick$ = fromEvent(stopButton, 'click')
 
-startClick$.pipe(
-    exhaustMap(() => timer(0, 5000).pipe(
-        tap(() => pollingStatus.innerHTML = 'Active'),
-        switchMapTo(ajax.getJSON('https://random.dog/woof.json')),
-        pluck('url'),
-        takeUntil(stopClick$),
-        finalize(() => pollingStatus.innerHTML = 'Stopped')
-    )),
-).subscribe(url => dogImage.src = url)
+// startClick$.pipe(
+//     exhaustMap(() => timer(0, 5000).pipe(
+//         tap(() => pollingStatus.innerHTML = 'Active'),
+//         switchMapTo(ajax.getJSON('https://random.dog/woof.json')),
+//         pluck('url'),
+//         takeUntil(stopClick$),
+//         finalize(() => pollingStatus.innerHTML = 'Stopped')
+//     )),
+// ).subscribe(url => dogImage.src = url)
+
+const number$ = of(1, 2, 3)
+// number$.pipe(startWith(12), endWith(12)).subscribe(console.log)
+
+const counter$ = interval(1000)
+
+const countdown = document.getElementById('countdown') as HTMLElement;
+const message = document.getElementById('message') as HTMLElement;
+const abortButton = document.getElementById('abortMission') as HTMLButtonElement;
+const COUNTDOWN_FROM = 10;
+const abortClick$ = fromEvent(abortButton, 'click')
+
+counter$.pipe(
+    mapTo(-1),
+    scan((accumulator, current) => {
+        return accumulator + current;
+    }, COUNTDOWN_FROM),
+    takeWhile(value => value >= 0),
+    takeUntil(abortClick$),
+    startWith(COUNTDOWN_FROM)
+).subscribe(value => {
+    countdown.innerHTML = '' + value;
+    if (!value) {
+        message.innerHTML = 'liftoff!';
+    }
+});
