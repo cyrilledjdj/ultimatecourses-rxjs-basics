@@ -17,7 +17,8 @@ import {
     debounce,
     throttleTime,
     sampleTime,
-    sample
+    sample,
+    auditTime
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -358,10 +359,17 @@ import {
 // )
 // progress$.subscribe(percent => { progressBar.style.width = `${percent}%` })
 
+// const click$ = fromEvent(document, 'click')
+// const timer$ = interval(1000)
+// timer$.pipe(
+//     // sampleTime(4000),
+//     sample(click$),
+//     // map(({ clientX, clientY }: MouseEvent) => ({ clientX, clientY }))
+// ).subscribe(console.log)
+
 const click$ = fromEvent(document, 'click')
 const timer$ = interval(1000)
-timer$.pipe(
-    // sampleTime(4000),
-    sample(click$),
-    // map(({ clientX, clientY }: MouseEvent) => ({ clientX, clientY }))
+click$.pipe(
+    auditTime(4000),
 ).subscribe(console.log)
+
