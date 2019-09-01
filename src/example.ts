@@ -654,32 +654,33 @@ import {
 //     map(([first, second]) => first + second)
 // ).subscribe(console.log)
 
-const number$ = of(1, 2, 3)
-const letters$ = from(['a', 'b', 'c'])
+// const number$ = of(1, 2, 3)
+// const letters$ = from(['a', 'b', 'c'])
 
-forkJoin(
-    number$.pipe(delay(3000)),
-    letters$.pipe(delay(6000))
-).subscribe(console.log)
+// forkJoin(
+//     number$.pipe(delay(3000)),
+//     letters$.pipe(delay(6000))
+// ).subscribe(console.log)
 
-forkJoin({
-    numbers: number$.pipe(delay(3000)),
-    letters: letters$.pipe(delay(6000))
-}).subscribe(console.log)
+// forkJoin({
+//     numbers: number$.pipe(delay(3000)),
+//     letters: letters$.pipe(delay(6000))
+// }).subscribe(console.log)
 
-const GITHUB_API_BASE = 'https://api.github.com';
+// const GITHUB_API_BASE = 'https://api.github.com';
 
-forkJoin({
-    'full-name': ajax.getJSON(`${GITHUB_API_BASE}/users/cyrilledjdj`).pipe(
-        pluck('name')
-    ),
-    'repo-names': ajax.getJSON(`${GITHUB_API_BASE}/users/cyrilledjdj/repos`).pipe(
-        map((list: Array<any>) => {
-            const ans = []
-            list.reduce((prev, curr) => {
-                ans.push(curr.name);
-            });
-            return ans;
-        })
-    )
-}).subscribe(console.log)
+// forkJoin({
+//     'full-name': ajax.getJSON(`${GITHUB_API_BASE}/users/cyrilledjdj`).pipe(
+//         pluck('name')
+//     ),
+//     'repo-names': ajax.getJSON(`${GITHUB_API_BASE}/users/cyrilledjdj/repos`).pipe(
+//         map((list: Array<any>) => {
+//             const ans = []
+//             list.reduce((prev, curr) => {
+//                 ans.push(curr.name);
+//             });
+//             return ans;
+//         })
+//     )
+// }).subscribe(console.log, null, () => console.log('Complete!'))
+
