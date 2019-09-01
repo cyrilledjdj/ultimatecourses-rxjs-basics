@@ -1,4 +1,4 @@
-import { fromEvent, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer } from "rxjs";
+import { fromEvent, merge, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer } from "rxjs";
 import { ajax } from 'rxjs/ajax';
 import {
     map,
@@ -32,7 +32,7 @@ import {
     switchMapTo,
     startWith,
     endWith,
-    concat as concatOperator
+    concat as concatOperator,
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -551,18 +551,59 @@ import {
 //     }
 // });
 
-const interval$ = interval(1000)
-const delayed$ = empty().pipe(delay(1000))
-const concat$ = concat(from([1, 2, 3]), of(1, 2, 3))
+// const interval$ = interval(1000)
+// const delayed$ = empty().pipe(delay(1000))
+// const concat$ = concat(from([1, 2, 3]), of(1, 2, 3))
 
 // concat$.subscribe(console.log)
 
-delayed$.pipe(
-    concatOperator(
-        delayed$.pipe(startWith('3...')),
-        delayed$.pipe(startWith('2...')),
-        delayed$.pipe(startWith('1...')),
-        delayed$.pipe(startWith('Go!')),
-    ),
-    startWith('Get Ready!')
+// delayed$.pipe(
+//     concatOperator(
+//         delayed$.pipe(startWith('3...')),
+//         delayed$.pipe(startWith('2...')),
+//         delayed$.pipe(startWith('1...')),
+//         delayed$.pipe(startWith('Go!')),
+//     ),
+//     startWith('Get Ready!')
+// ).subscribe(console.log)
+
+const keyup$ = fromEvent(document, 'keyup')
+const click$ = fromEvent(document, 'click')
+
+// keyup$.subscribe(console.log)
+// click$.subscribe(console.log) 
+
+merge(
+    keyup$,
+    click$
 ).subscribe(console.log)
+
+const counter$ = interval(1000)
+
+const countdown = document.getElementById('countdown') as HTMLElement;
+const message = document.getElementById('message') as HTMLElement;
+const pauseButton = document.getElementById('pauseMission') as HTMLButtonElement;
+const startButton = document.getElementById('startMission') as HTMLButtonElement;
+const COUNTDOWN_FROM = 10;
+const pauseClick$ = fromEvent(pauseButton, 'click')
+const startClick$ = fromEvent(startButton, 'click')
+
+merge(
+    startClick$.pipe(mapTo(true)),
+    pauseClick$.pipe(mapTo(false))
+).pipe(
+    switchMap(shouldStart => {
+        return shouldStart && counter$ || empty()
+    }),
+    mapTo(-1),
+    scan((accumulator, current) => {
+        return accumulator + current;
+    }, COUNTDOWN_FROM),
+    takeWhile(value => value >= 0),
+    startWith(COUNTDOWN_FROM)
+).subscribe(value => {
+    countdown.innerHTML = '' + value;
+    if (!value) {
+        message.innerHTML = 'liftoff!';
+    }
+});
