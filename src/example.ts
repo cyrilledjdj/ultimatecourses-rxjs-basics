@@ -21,7 +21,8 @@ import {
     sample,
     auditTime,
     mergeAll,
-    mergeMap
+    mergeMap,
+    switchMap
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -394,23 +395,45 @@ import {
 //     // mergeAll(),
 // ).subscribe(console.log)
 
+// const click$ = fromEvent(document, 'click');
+// const mousedown$ = fromEvent(document, 'mousedown');
+// const mouseup$ = fromEvent(document, 'mouseup');
+// const interval$ = interval(1000);
+
+// mousedown$.pipe(
+//     mergeMap(() => interval$.pipe(
+//         takeUntil(mouseup$)
+//     ))
+// ).subscribe(console.log)
+
+// const coordinates$ = click$.pipe(
+//     map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
+// )
+
+// const coordinatesWithSave$ = coordinates$.pipe(
+//     mergeMap(coords => ajax.post('https://www.mocky.io/v2/5185415ba171ea3a00704eed', coords))
+// )
+
+// coordinatesWithSave$.subscribe(console.log);
+
 const click$ = fromEvent(document, 'click');
 const mousedown$ = fromEvent(document, 'mousedown');
 const mouseup$ = fromEvent(document, 'mouseup');
 const interval$ = interval(1000);
 
-mousedown$.pipe(
-    mergeMap(() => interval$.pipe(
-        takeUntil(mouseup$)
-    ))
-).subscribe(console.log)
+const BASE_URL = 'https://api.openbrewerydb.org/breweries';
+// click$.pipe(
+//     switchMap(() => interval$)
+// ).subscribe(console.log)
 
-const coordinates$ = click$.pipe(
-    map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
-)
-
-const coordinatesWithSave$ = coordinates$.pipe(
-    mergeMap(coords => ajax.post('https://www.mocky.io/v2/5185415ba171ea3a00704eed', coords))
-)
-
-coordinatesWithSave$.subscribe(console.log);
+const textInput = document.getElementById('text-input');
+const typeaheadContainer = document.getElementById('typeahead-container')
+const input$ = fromEvent(textInput, 'keyup')
+input$.pipe(
+    debounceTime(250),
+    pluck('target', 'value'),
+    distinctUntilChanged(),
+    switchMap(searchTerm => ajax.getJSON(`${BASE_URL}?by_name=${searchTerm}`))
+).subscribe((response: Array<{ name }>) => {
+    typeaheadContainer.innerHTML = response.map(b => b.name).join('<br>');
+})
