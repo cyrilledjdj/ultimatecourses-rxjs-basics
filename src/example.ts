@@ -15,7 +15,9 @@ import {
     distinctUntilKeyChanged,
     debounceTime,
     debounce,
-    throttleTime
+    throttleTime,
+    sampleTime,
+    sample
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -331,27 +333,35 @@ import {
 // ).subscribe(value => console.log(value), null, () => console.log('Complete!'))
 
 
-const click$ = fromEvent(document, 'click');
+// const click$ = fromEvent(document, 'click');
 
-click$.pipe(
-    throttleTime(3000),
-    // debounceTime(1000),
-    pluck('target'),
-    // distinctUntilChanged()
-).subscribe(value => console.log(value), null, () => console.log('Complete!'))
+// click$.pipe(
+//     throttleTime(3000),
+//     // debounceTime(1000),
+//     pluck('target'),
+//     // distinctUntilChanged()
+// ).subscribe(value => console.log(value), null, () => console.log('Complete!'))
 
-function calculateScrollPercent(element) {
-    const { scrollTop, scrollHeight, clientHeight } = element;
-    return (scrollTop / (scrollHeight - clientHeight)) * 100;
-}
-const progressBar: HTMLElement = document.querySelector('.progress-bar');
-const scroll$ = fromEvent(document, 'scroll');
-const progress$ = scroll$.pipe(
-    throttleTime(1000, asyncScheduler, {
-        leading: false,
-        trailing: true
-    }),
-    map(({ target }: Event) => calculateScrollPercent(target['documentElement'])),
-    tap(console.log)
-)
-progress$.subscribe(percent => { progressBar.style.width = `${percent}%` })
+// function calculateScrollPercent(element) {
+//     const { scrollTop, scrollHeight, clientHeight } = element;
+//     return (scrollTop / (scrollHeight - clientHeight)) * 100;
+// }
+// const progressBar: HTMLElement = document.querySelector('.progress-bar');
+// const scroll$ = fromEvent(document, 'scroll');
+// const progress$ = scroll$.pipe(
+//     throttleTime(1000, asyncScheduler, {
+//         leading: false,
+//         trailing: true
+//     }),
+//     map(({ target }: Event) => calculateScrollPercent(target['documentElement'])),
+//     tap(console.log)
+// )
+// progress$.subscribe(percent => { progressBar.style.width = `${percent}%` })
+
+const click$ = fromEvent(document, 'click')
+const timer$ = interval(1000)
+timer$.pipe(
+    // sampleTime(4000),
+    sample(click$),
+    // map(({ clientX, clientY }: MouseEvent) => ({ clientX, clientY }))
+).subscribe(console.log)
