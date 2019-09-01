@@ -1,4 +1,4 @@
-import { fromEvent, Observer, from, interval, Subscriber, of } from "rxjs";
+import { fromEvent, Observer, from, interval, Subscriber, of, asyncScheduler } from "rxjs";
 import {
     map,
     pluck,
@@ -14,7 +14,8 @@ import {
     distinctUntilChanged,
     distinctUntilKeyChanged,
     debounceTime,
-    debounce
+    debounce,
+    throttleTime
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -317,14 +318,40 @@ import {
 
 // name$.subscribe(console.log)4
 
-const inputBox = document.getElementById('text-input')
+// const inputBox = document.getElementById('text-input')
 
-const input$ = fromEvent(inputBox, 'keyup');
+// const input$ = fromEvent(inputBox, 'keyup');
+// const click$ = fromEvent(document, 'click');
+
+// input$.pipe(
+//     // debounceTime(1000),
+//     debounce(() => interval(1000)),
+//     pluck('target', 'value'),
+//     distinctUntilChanged()
+// ).subscribe(value => console.log(value), null, () => console.log('Complete!'))
+
+
 const click$ = fromEvent(document, 'click');
 
-input$.pipe(
+click$.pipe(
+    throttleTime(3000),
     // debounceTime(1000),
-    debounce(() => interval(1000)),
-    pluck('target', 'value'),
-    distinctUntilChanged()
+    pluck('target'),
+    // distinctUntilChanged()
 ).subscribe(value => console.log(value), null, () => console.log('Complete!'))
+
+function calculateScrollPercent(element) {
+    const { scrollTop, scrollHeight, clientHeight } = element;
+    return (scrollTop / (scrollHeight - clientHeight)) * 100;
+}
+const progressBar: HTMLElement = document.querySelector('.progress-bar');
+const scroll$ = fromEvent(document, 'scroll');
+const progress$ = scroll$.pipe(
+    throttleTime(1000, asyncScheduler, {
+        leading: false,
+        trailing: true
+    }),
+    map(({ target }: Event) => calculateScrollPercent(target['documentElement'])),
+    tap(console.log)
+)
+progress$.subscribe(percent => { progressBar.style.width = `${percent}%` })
