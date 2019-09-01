@@ -1,4 +1,4 @@
-import { fromEvent, merge, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer } from "rxjs";
+import { fromEvent, merge, concat, Observer, from, interval, Subscriber, of, asyncScheduler, empty, timer, combineLatest } from "rxjs";
 import { ajax } from 'rxjs/ajax';
 import {
     map,
@@ -33,6 +33,8 @@ import {
     startWith,
     endWith,
     concat as concatOperator,
+    distinct,
+    withLatestFrom,
 } from "rxjs/operators";
 
 // const observer: Observer<any> = {
@@ -567,43 +569,86 @@ import {
 //     startWith('Get Ready!')
 // ).subscribe(console.log)
 
-const keyup$ = fromEvent(document, 'keyup')
-const click$ = fromEvent(document, 'click')
+// const keyup$ = fromEvent(document, 'keyup')
+// const click$ = fromEvent(document, 'click')
 
 // keyup$.subscribe(console.log)
 // click$.subscribe(console.log) 
 
-merge(
-    keyup$,
-    click$
+// merge(
+//     keyup$,
+//     click$
+// ).subscribe(console.log)
+
+// const counter$ = interval(1000)
+
+// const countdown = document.getElementById('countdown') as HTMLElement;
+// const message = document.getElementById('message') as HTMLElement;
+// const pauseButton = document.getElementById('pauseMission') as HTMLButtonElement;
+// const startButton = document.getElementById('startMission') as HTMLButtonElement;
+// const COUNTDOWN_FROM = 10;
+// const pauseClick$ = fromEvent(pauseButton, 'click')
+// const startClick$ = fromEvent(startButton, 'click')
+
+// merge(
+//     startClick$.pipe(mapTo(true)),
+//     pauseClick$.pipe(mapTo(false))
+// ).pipe(
+//     switchMap(shouldStart => {
+//         return shouldStart && counter$ || empty()
+//     }),
+//     mapTo(-1),
+//     scan((accumulator, current) => {
+//         return accumulator + current;
+//     }, COUNTDOWN_FROM),
+//     takeWhile(value => value >= 0),
+//     startWith(COUNTDOWN_FROM)
+// ).subscribe(value => {
+//     countdown.innerHTML = '' + value;
+//     if (!value) {
+//         message.innerHTML = 'liftoff!';
+//     }
+// });
+
+const firstInput = document.getElementById('first');
+const secondInput = document.getElementById('second');
+
+
+const keyup$ = fromEvent(document, 'keyup')
+const click$ = fromEvent(document, 'click')
+
+const changeAsValue = (elem: HTMLElement) => {
+    return merge(
+        fromEvent(elem, 'change'),
+        fromEvent(elem, 'keyup')
+    ).pipe(
+        map((event: Event) => (event.target as HTMLInputElement).valueAsNumber),
+        distinctUntilChanged()
+    )
+}
+
+// keyup$.subscribe(console.log)
+// click$.subscribe(console.log) 
+combineLatest(
+    of(1, 2, 3),
+    of(4, 5, 6)
+).pipe(
+    withLatestFrom()
 ).subscribe(console.log)
 
-const counter$ = interval(1000)
+// combineLatest(
+//     keyup$,
+//     click$
+// ).subscribe(console.log)
 
-const countdown = document.getElementById('countdown') as HTMLElement;
-const message = document.getElementById('message') as HTMLElement;
-const pauseButton = document.getElementById('pauseMission') as HTMLButtonElement;
-const startButton = document.getElementById('startMission') as HTMLButtonElement;
-const COUNTDOWN_FROM = 10;
-const pauseClick$ = fromEvent(pauseButton, 'click')
-const startClick$ = fromEvent(startButton, 'click')
+click$.pipe(
+    withLatestFrom(interval(1000))
+).subscribe(console.log)
 
-merge(
-    startClick$.pipe(mapTo(true)),
-    pauseClick$.pipe(mapTo(false))
+combineLatest(
+    changeAsValue(firstInput),
+    changeAsValue(secondInput)
 ).pipe(
-    switchMap(shouldStart => {
-        return shouldStart && counter$ || empty()
-    }),
-    mapTo(-1),
-    scan((accumulator, current) => {
-        return accumulator + current;
-    }, COUNTDOWN_FROM),
-    takeWhile(value => value >= 0),
-    startWith(COUNTDOWN_FROM)
-).subscribe(value => {
-    countdown.innerHTML = '' + value;
-    if (!value) {
-        message.innerHTML = 'liftoff!';
-    }
-});
+    filter(([first, second]: Array<any>) => !isNaN(first) && !isNaN(second)),
+    map(([first, second]) => first + second)
+).subscribe(console.log)
